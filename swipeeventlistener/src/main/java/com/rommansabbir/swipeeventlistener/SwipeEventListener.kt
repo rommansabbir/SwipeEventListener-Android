@@ -5,23 +5,25 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 
-/**
- * Get context from parent activity
- * Instantiate GestureDetector
- * Instantiate SwipeEventListener interface
- * @param context
- */
-class SwipeEventListener(private val context: Context) : View.OnTouchListener {
-    private val gestureDetector: GestureDetector
-    private val touchListenerInterface: SwipeEventListenerInterface
-
-    init {
-        gestureDetector = GestureDetector(context, GestureListener())
-        touchListenerInterface = context as SwipeEventListenerInterface
+class SwipeEventListener : View.OnTouchListener {
+    private var context: Context ? = null
+    private var gestureDetector: GestureDetector? = null
+    private var callback : SwipeEventCallback? = null
+    override fun onTouch(v: View, event: MotionEvent): Boolean {
+        callback
+        return gestureDetector!!.onTouchEvent(event)
     }
 
-    override fun onTouch(v: View, event: MotionEvent): Boolean {
-        return gestureDetector.onTouchEvent(event)
+    /**
+     * Set component
+     * @param context [Context]
+     * @param callback [SwipeEventCallback]
+     */
+
+    fun setComponent(context: Context, callback: SwipeEventCallback){
+        this.context = context
+        this.callback = callback
+        gestureDetector = GestureDetector(context, GestureListener())
     }
 
     /**
@@ -45,12 +47,12 @@ class SwipeEventListener(private val context: Context) : View.OnTouchListener {
                             /**
                              * Notify the interface on right swipe
                              */
-                            touchListenerInterface.onSwipeRight()
+                            callback!!.onSwipeRight()
                         } else {
                             /**
                              * Notify the interface on left swipe
                              */
-                            touchListenerInterface.onSwipeLeft()
+                            callback!!.onSwipeLeft()
                         }
                         result = true
                     }
@@ -59,12 +61,12 @@ class SwipeEventListener(private val context: Context) : View.OnTouchListener {
                         /**
                          * Notify the interface on bottom swipe
                          */
-                        touchListenerInterface.onSwipeBottom()
+                        callback!!.onSwipeBottom()
                     } else {
                         /**
                          * Notify the interface on top swipe
                          */
-                        touchListenerInterface.onSwipeTop()
+                        callback!!.onSwipeTop()
                     }
                     result = true
                 }
@@ -74,13 +76,6 @@ class SwipeEventListener(private val context: Context) : View.OnTouchListener {
 
             return result
         }
-    }
-
-    interface SwipeEventListenerInterface {
-        fun onSwipeRight()
-        fun onSwipeLeft()
-        fun onSwipeTop()
-        fun onSwipeBottom()
     }
 
 }
